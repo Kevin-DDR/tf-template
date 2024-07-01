@@ -1,0 +1,49 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Build + Deploy to S3
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    # - run: npm ci
+    # - run: npm run lint
+    # - run: npm run generate
+    # - run: npm test
+    # - uses: hashicorp/setup-terraform@v3
+    # - name: Terraform Init
+    #   id: init
+    #   run: terraform -chdir=terraform init
+    # - name: Terraform Apply
+    #   id: apply
+    #   run: terraform -chdir=terraform apply -auto-approve
+    - uses: shallwefootball/s3-upload-action@master
+      with:
+        aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+        aws_bucket: ${{ vars.S3_NAME }}
+        source_dir: 'dist'
+        destination_dir: ''
+    
+
+

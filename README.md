@@ -1,24 +1,38 @@
 # Terraform template for S3 webapp / site hosting
+## Setup
+Rename `.env.example` into `.env`
 
-## Required env variables
+Edit `.env` to add your own keys
 
-## Export OVHcloud API credentials
-$ export TF_VAR_AWS_ACCESS_KEY_ID="..."
-$ export TF_VAR_AWS_SECRET_ACCESS_KEY="..."
-$ export TF_VAR_APPLICATION_KEY="..."
-$ export TF_VAR_APPLICATION_SECRET="..."
-$ export TF_VAR_CONSUMER_KEY="..."
+Change the default values for variables in `variables.tf`
 
-## Change the variables in variables.tf
+- `cd terraform`
 
-export $(grep -v '^#' .env | xargs)
+- `export $(grep -v '^#' ../.env | xargs)`
 
-or (if you're in ./terraform/)
+- `terraform init`
 
-export $(grep -v '^#' ../.env | xargs)
+- `terraform plan`
 
-`cd terraform`
-`terraform init`
-`terraform plan`
-`terraform apply`
-`terraform destroy`
+- `terraform apply`
+
+Once you've tested locally
+
+- `terraform destroy`
+
+Next you can create a Terraform Cloud project.
+
+Connect the repo.
+
+Add the .env variables in the project.
+
+## Github action
+
+Add: 
+- `S3_NAME` (Same value as in `variables.tf`) to the public Github repo variables
+
+- `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to the secret Github repo variables
+
+
+
+Edit `deploy.yml` to add your own custom build / lint / test phase.
