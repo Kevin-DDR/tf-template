@@ -26,6 +26,8 @@ Connect the repo.
 
 Add the .env variables in the project.
 
+Set the `terraform` working directory in the Terraform cloud workspace settings 
+
 ## Github action
 
 Add: 
@@ -36,3 +38,6 @@ Add:
 
 
 Edit `deploy.yml` to add your own custom build / lint / test phase.
+
+## License
+KD20 © 2024 by Kévin DONIN DE ROSIERE is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/
