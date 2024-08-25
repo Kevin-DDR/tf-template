@@ -1,0 +1,66 @@
+# This worflow is setup to work with the project files living in /vue/. Change the appropriate paths to work with your project
+
+name: Build + Deploy to S3
+
+on:
+  push:
+    branches: [ "main" ]
+
+# env:
+#   VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+#   VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY}}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+       run:
+         working-directory: ./vue/
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: './vue/package-lock.json'
+    - run: npm ci
+    - run: npm run lint
+    - run: npm run build
+  
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    defaults:
+       run:
+         working-directory: ./vue/
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: './vue/package-lock.json'
+    - run: npm ci
+    - run: npm run build
+    - uses: shallwefootball/s3-upload-action@master
+      with:
+        aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+        aws_bucket: ${{ vars.S3_NAME }}
+        source_dir: 'vue/dist'
+        destination_dir: ''
+    
